@@ -1,0 +1,32 @@
+{
+  "name": "grafica-calificaciones",
+  "version": "1.0.0",
+  "description": "grafica de calificaciones de alumnos",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JDanielSolis/GraficaCalificaciones.git"
+  },
+  "keywords": [
+    "grafica","calificaciones"
+  ],
+  "author": "Ing. Daniel Solis",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JDanielSolis/GraficaCalificaciones/issues"
+  },
+  "homepage": "https://github.com/JDanielSolis/GraficaCalificaciones#readme",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "chart.js": "^2.7.3",
+    "express": "^4.16.4",
+    "express-hbs": "^1.0.4",
+    "fs-extra": "^7.0.1",
+    "multer": "^1.4.1",
+    "node-xlsx": "^0.12.1",
+    "open": "0.0.5"
+  }
+}

@@ -1,0 +1,95 @@
+<html>
+
+<head>
+  <title>Calificaciónes de alumnos</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  <script src="http://www.chartjs.org/dist/2.7.3/Chart.bundle.js"></script>
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+</head>
+
+<body>
+  <div class="container">
+    {{# if error }}
+    <p class="alert alert-danger"><i class="glyphicon glyphicon-remove"></i> Operación fallo!</p>
+    {{/if}} {{# if success }}
+    <p class="alert alert-success"><i class="glyphicon glyphicon-ok"></i> Operación realizados!</p>
+    {{/if}}
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        GRAFICAS DE CALIFICACIONES
+      </div>
+      <br>
+      <div class="row">
+        <div class="col-md-8">
+          <canvas id="grafica"></canvas>
+        </div>
+        <div class="col-md-4">
+          <label class="text-primary">Opciones de graficas</label>
+          <div>
+            <label>Cargar archivo (XLSX) con calificaciones</label>
+            <div class="col-md-10 input-group">
+              <form id="uploadForm" enctype="multipart/form-data" action="/data/upload" method="post">
+                <div class="row">
+                  <div class="col-md-12">
+                    <input id="file" type="file" class="form-control-file" name="fileXlsx">
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-12 text-right">
+                    <button type="submit" class="btn btn-success">Cargar archivo <i class="fa fa-upload"></i></button>
+                  </div>
+                </div>
+                <span id="status"></span>
+              </form>
+            </div>
+          </div>
+          <div>
+            <br>
+            <label>Seleccione tipo de grafica</label>
+            <br>
+            <button onclick="getGraph(this.id)" id="bar" type="button" class="btn btn-primary">Calificaciones grafica <i
+                class="fa fa-bar-chart"></i></button>
+            <br><br>
+            <button onclick="getGraph(this.id)" id="pie" type="button" class="btn btn-info">Datos generales grafica <i class="fa fa-circle-o"></i></button>
+          </div>
+        </div>
+      </div>
+      <br>
+    </div>
+  </div>
+  </div>
+</body>
+<script>
+  let getGraph = (type) => {
+    $.get(`http://localhost:8000/graph/${type}`, (objData) => {
+      console.log(JSON.stringify(objData, undefined, 2))      
+      let element = document.getElementById("grafica");
+      new Chart(element, objData);
+    })
+  };
+
+  $(document).ready(function () {
+    $('#uploadForm').submit(function () {
+      $("#status").empty().text("Cargando archivo...");
+
+      $(this).ajaxSubmit({
+        error: function (xhr) {
+          status('Error: ' + xhr.status);
+        },
+        success: function (response) {
+          console.log(response)
+          $("#status").empty().text(response);
+        }
+      });
+
+      return false;
+    });
+  });  
+</script>
+
+</html>
