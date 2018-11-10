@@ -70,6 +70,17 @@ let chartData = (typeGraph) => {
     let colors = getColors()
     let data = getData(typeGraph)
     let titulo = (displayOption) ? 'Promedios por grado' : 'Calificaciones'
+    let zero = {}
+
+    if (!displayOption) {
+        zero = {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
 
     let objData = {
         type: typeGraph,
@@ -90,13 +101,7 @@ let chartData = (typeGraph) => {
                 display: true,
                 text: titulo
             },
-            scales: {
-                yAxes: [{
-                    ticks: {
-                        beginAtZero: true
-                    }
-                }]
-            }
+            scales: zero
         }
     }
     return objData
@@ -145,21 +150,25 @@ router.post('/data/upload', upload.single('fileXlsx'), (req, res) => {
     if (req.file) {
         objData = [];
 
-        dataWorkSheet = xlsx.parse(req.file.path)[0].data;
-        headersTable = dataWorkSheet[0]
+        dataWorkSheet = xlsx.parse(req.file.path)[0].data.filter(Boolean);
+        headersTable = dataWorkSheet[0].filter(Boolean)
         dataWorkSheet.splice(0, 1)
         dataWorkSheet.forEach(element => {
             let obj = {}
+            let na = false;
             headersTable.forEach((item, index) => {
+                if (item == 'Calificacion' && !element[index]) na = true;
                 obj[item] = element[index]
             });
-            objData.push(obj)
+            if (!na) {
+                objData.push(obj)
+            }
         });
-        
+
         fs.remove(req.file.path)
-        res.status(200).send({ success: true })        
+        res.status(200).send({ success: true })
     } else {
-        res.status(200).send({ error: true })        
+        res.status(200).send({ error: true })
     }
 })
 
