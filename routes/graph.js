@@ -69,6 +69,7 @@ let chartData = (typeGraph) => {
     let border = 1; //grosor del borde de contormo de la representación de datos en la grafica           
     let colors = getColors()
     let data = getData(typeGraph)
+    let titulo = (displayOption) ? 'Promedios por grado' : 'Calificaciones'
 
     let objData = {
         type: typeGraph,
@@ -84,6 +85,17 @@ let chartData = (typeGraph) => {
         options: {
             legend: {
                 display: displayOption
+            },
+            title: {
+                display: true,
+                text: titulo
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
             }
         }
     }
@@ -123,7 +135,7 @@ router.get('/graph/mejor/peor/promedio', (req, res) => {
         }
     })
 
-    let promedio = suma / objData.length
+    let promedio = Number(suma / objData.length).toFixed(2)
 
     res.status(200).send({ mejor: mejor.nombre, peor: peor.nombre, promedio: promedio })
 })
@@ -143,11 +155,11 @@ router.post('/data/upload', upload.single('fileXlsx'), (req, res) => {
             });
             objData.push(obj)
         });
-        // console.log(objData)
+        
         fs.remove(req.file.path)
-        res.render('graph', { success: true });
+        res.status(200).send({ success: true })        
     } else {
-        res.render('graph', { error: true });
+        res.status(200).send({ error: true })        
     }
 })
 

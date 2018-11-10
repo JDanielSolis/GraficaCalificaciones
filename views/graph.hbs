@@ -10,59 +10,78 @@
   <script src="http://malsup.github.com/jquery.form.js"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
+  <link href="https://getbootstrap.com/docs/4.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 
 <body>
   <div class="container">
-    {{# if error }}
-    <p class="alert alert-danger"><i class="glyphicon glyphicon-remove"></i> Operación fallo!</p>
-    {{/if}} {{# if success }}
-    <p class="alert alert-success"><i class="glyphicon glyphicon-ok"></i> Operación realizados!</p>
-    {{/if}}
     <div class="panel panel-primary">
       <div class="panel-heading">
-        GRAFICAS DE CALIFICACIONES
+        PANEL DE VISUALIZACIÓN
       </div>
       <br>
       <div class="row">
-        <div class="col-md-8">
-          <canvas id="grafica"></canvas>
+        <div class="col-md-8 text-center">
+          <div class="col-md-4">
+            <div id="mejorAlumno"></div>
+          </div>
+          <div class="col-md-4">
+            <div id="peorAlumno"></div>
+          </div>
+          <div class="col-md-4">
+            <div id="promedioGral"></div>
+          </div>
         </div>
         <div class="col-md-4">
-          <label class="text-primary">Opciones de graficas</label>
-          <div>
-            <label>Cargar archivo (XLSX) con calificaciones</label>
-            <div class="col-md-10 input-group">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-5">
+          <br>
+          <canvas id="bar"></canvas>
+        </div>
+        <div class="col-md-5">
+          <canvas id="pie"></canvas>
+        </div>
+        <div class="col-md-2 text-center">
+          <label class="text-primary">Buscar archivo a graficar</label>
+          <div class="row">
+            <div class="col-md-11">
               <form id="uploadForm" enctype="multipart/form-data" action="/data/upload" method="post">
                 <div class="row">
                   <div class="col-md-12">
-                    <input id="file" type="file" class="form-control-file" name="fileXlsx">
+                    <div class="custom-file">
+                      <input type="file" class="custom-file-input" id="validatedCustomFile" name="fileXlsx">
+                      <label class="custom-file-label" for="validatedCustomFile">Archivo...</label>
+                    </div>
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-md-12 text-right">
-                    <button type="submit" class="btn btn-success">Cargar archivo <i class="fa fa-upload"></i></button>
+                  <div class="col-md-12">
+                    <button type="submit" class="btn btn-success btn-lg btn-block">Cargar archivo <i class="fa fa-upload"></i></button>
                   </div>
                 </div>
                 <span id="status"></span>
               </form>
             </div>
+            <div class="col-md-1"></div>
           </div>
-          <div>            
-            <br>
-            <label>Seleccione tipo de grafica</label>
-            <br>
-            <button onclick="getGraph(this.id)" id="bar" type="button" class="btn btn-primary">Calificaciones grafica <i
-                class="fa fa-bar-chart"></i></button>
-            <br><br>
-            <button onclick="getGraph(this.id)" id="pie" type="button" class="btn btn-info">Datos generales grafica <i class="fa fa-circle-o"></i></button>
-            <br><br>            
-            <div id="mejorAlumno"></div>
-            <br>
-            <div id="peorAlumno"></div>
-            <br>
-            <div id="promedioGral"></div>
+          <div class="row">
+            <div class="col-md-11">
+              <label>Tipo de grafica</label>
+              <br>
+              <button onclick="getGraph(this.id)" id="bar" type="button" class="btn btn-primary btn-lg btn-block">Calificaciones
+                <i class="fa fa-bar-chart"></i></button>
+            </div>
+            <div class="col-md-1"></div>
+          </div>
+          <br>
+          <div class="row">
+            <div class="col-md-11">
+              <button onclick="getGraph(this.id)" id="pie" type="button" class="btn btn-info btn-lg btn-block">Datos generales
+                <i class="fa fa-circle-o"></i></button>
+            </div>
+            <div class="col-md-1"></div>
           </div>
         </div>
       </div>
@@ -74,7 +93,7 @@
 <script>
   let getGraph = (type) => {
     $.get(`http://localhost:8000/graph/${type}`, (objData) => {
-      let element = document.getElementById("grafica");
+      let element = document.getElementById(type);
       new Chart(element, objData);
     })
   };
@@ -85,16 +104,20 @@
 
       $(this).ajaxSubmit({
         error: function (xhr) {
-          status('Error: ' + xhr.status);
+          $("#status").empty().text("Error cargando archivo...");
         },
         success: function (response) {
-          $("#status").empty().text('');
+          if (response.error) return $("#status").html("<p class='alert alert-danger'><i class='glyphicon glyphicon-remove'></i> No se cargo un archivo</p>");
           //El mejor, el peor y el promedio general
           $.get("http://localhost:8000/graph/mejor/peor/promedio", function (objData) {
             $("#mejorAlumno").html('<strong>El Mejor: </strong>' + objData.mejor);
             $("#peorAlumno").html('<strong>El peor: </strong>' + objData.peor);
             $("#promedioGral").html('<strong>Promedio General: </strong>' + objData.promedio);
           })
+          getGraph('bar')
+          getGraph('pie')
+          
+          $("#status").empty().text("");
         }
       });
 
