@@ -18,9 +18,9 @@ Seguir los siguientes pasos para la inatalacion del proyecto y probar su funcion
     git clone https://github.com/JDanielSolis/GraficaCalificaciones.git
     ```
 
-1. Navegar a la direccion de directorio `graficas-calificaciones`:
+1. Navegar a la direccion de directorio `GraficaCalificaciones`:
     ```
-    cd graficas-calificaciones
+    cd GraficaCalificaciones
     ```
 
 1. Instalar las dependencias del proyecto
