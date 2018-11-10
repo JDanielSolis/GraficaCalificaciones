@@ -91,6 +91,8 @@ let chartData = (typeGraph) => {
 }
 
 router.get('/', (req, res) => {
+    dataWorkSheet = [];
+    headersTable = [];
     res.render('graph');
 });
 
@@ -99,6 +101,31 @@ router.get('/graph/:type', (req, res) => {
     let data = chartData(typeGraph)
     // console.log(JSON.stringify(data, undefined, 2))
     res.status(200).send(data)
+})
+
+router.get('/graph/mejor/peor/promedio', (req, res) => {
+    let mejor = { cal: 0, nombre: '' };
+    let suma = 0
+
+    objData.forEach((obj) => {
+        suma += obj.Calificacion
+        if (mejor.cal < obj.Calificacion) {
+            mejor.cal = obj.Calificacion
+            mejor.nombre = obj.Nombres
+        }
+    })
+
+    let peor = { cal: mejor.cal, nombre: '' };
+    objData.forEach((obj) => {
+        if (peor.cal > obj.Calificacion) {
+            peor.cal = obj.Calificacion
+            peor.nombre = obj.Nombres
+        }
+    })
+
+    let promedio = suma / objData.length
+
+    res.status(200).send({ mejor: mejor.nombre, peor: peor.nombre, promedio: promedio })
 })
 
 //Carga del archivo a server y memoria

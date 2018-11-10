@@ -7,6 +7,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <script src="http://www.chartjs.org/dist/2.7.3/Chart.bundle.js"></script>
+  <script src="http://malsup.github.com/jquery.form.js"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 
@@ -48,7 +49,7 @@
               </form>
             </div>
           </div>
-          <div>
+          <div>            
             <br>
             <label>Seleccione tipo de grafica</label>
             <br>
@@ -56,6 +57,12 @@
                 class="fa fa-bar-chart"></i></button>
             <br><br>
             <button onclick="getGraph(this.id)" id="pie" type="button" class="btn btn-info">Datos generales grafica <i class="fa fa-circle-o"></i></button>
+            <br><br>            
+            <div id="mejorAlumno"></div>
+            <br>
+            <div id="peorAlumno"></div>
+            <br>
+            <div id="promedioGral"></div>
           </div>
         </div>
       </div>
@@ -67,7 +74,6 @@
 <script>
   let getGraph = (type) => {
     $.get(`http://localhost:8000/graph/${type}`, (objData) => {
-      console.log(JSON.stringify(objData, undefined, 2))      
       let element = document.getElementById("grafica");
       new Chart(element, objData);
     })
@@ -82,8 +88,13 @@
           status('Error: ' + xhr.status);
         },
         success: function (response) {
-          console.log(response)
-          $("#status").empty().text(response);
+          $("#status").empty().text('');
+          //El mejor, el peor y el promedio general
+          $.get("http://localhost:8000/graph/mejor/peor/promedio", function (objData) {
+            $("#mejorAlumno").html('<strong>El Mejor: </strong>' + objData.mejor);
+            $("#peorAlumno").html('<strong>El peor: </strong>' + objData.peor);
+            $("#promedioGral").html('<strong>Promedio General: </strong>' + objData.promedio);
+          })
         }
       });
 

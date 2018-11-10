@@ -6,9 +6,13 @@ const app = express();
 const bodyParser = require('body-parser');
 const hbs = require('express-hbs');
 const open = require('open');
+const favicon = require('serve-favicon');
 
 //Inicializamos 
 const port = process.env.port;
+
+app.use(express.static(`./public/`));
+app.use(favicon(`./public/favicon.png`));
 
 app.engine('hbs', hbs.express4());
 app.set('view engine', 'hbs');
@@ -21,5 +25,5 @@ app.use('/', require('./routes/graph'));
 
 app.listen(port, () => {
   console.log('Servidor en ejecución en puerto', port);
-  open(`http://localhost:${port}`);
+  // open(`http://localhost:${port}`);
 });
