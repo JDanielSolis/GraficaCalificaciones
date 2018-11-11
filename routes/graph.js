@@ -152,16 +152,17 @@ router.get('/graph/mejor/peor/promedio', (req, res) => {
 router.post('/data/upload', upload.single('fileXlsx'), (req, res) => {
     try {
         if (req.file) {
+
+            let ext = req.file.originalname.split('.')[1].toLocaleLowerCase()
+            if (ext != 'xlsx') throw { error: `Archivo invalido (${ext})` }
+
             objData = [];
 
             dataWorkSheet = xlsx.parse(req.file.path)[0].data.filter(Boolean);
             headersTable = dataWorkSheet[0].filter(Boolean).map(item => item = camel(item))
 
             //validamos la cabecera del archivo
-            if (arrHeaders.find(item => headersTable.indexOf(item) == -1)) {
-                fs.remove(req.file.path)
-                throw { error: 'Falta alguna cabecera' }
-            }
+            if (arrHeaders.find(item => headersTable.indexOf(item) == -1)) throw { error: 'Falta alguna cabecera' }
 
             dataWorkSheet.splice(0, 1)
             dataWorkSheet.forEach(element => {
@@ -185,6 +186,7 @@ router.post('/data/upload', upload.single('fileXlsx'), (req, res) => {
         }
 
     } catch (error) {
+        if (req.file) fs.remove(req.file.path)
         res.status(200).send(error)
     }
 })
