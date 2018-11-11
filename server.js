@@ -25,5 +25,5 @@ app.use('/', require('./routes/graph'));
 
 app.listen(port, () => {
   console.log('Servidor en ejecución en puerto', port);
-  open(`http://localhost:${port}`);
+  // open(`http://localhost:${port}`);
 });

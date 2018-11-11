@@ -3,8 +3,10 @@ const router = express.Router();
 const multer = require('multer');
 const fs = require('fs-extra');
 const xlsx = require('node-xlsx');
+const camel = require('camelcase');
 const upload = multer({ dest: 'uploads/' });
 
+var arrHeaders = ['nombres', 'apellidoMaterno', 'apellidoPaterno', 'grado', 'grupo', 'calificacion']
 var dataWorkSheet = [];
 var headersTable = [];
 var objData = [];
@@ -26,9 +28,9 @@ let getCal = () => {
     let grados = {}
 
     objData.forEach((obj) => {
-        let grado = `Grado ${obj.Grado}`
+        let grado = `Grado ${obj.grado}`
         if (!grados[grado]) grados[grado] = [];
-        grados[grado].push(obj.Calificacion)
+        grados[grado].push(obj.calificacion)
     })
     let labels = Object.keys(grados)
     let promedios = [];
@@ -55,7 +57,7 @@ let getData = (typeGraph) => {
     let data = { info: [], labels: [] };
     switch (typeGraph) {
         case 'bar':
-            objData.forEach(objItem => { data.info.push(objItem.Calificacion); data.labels.push('') })
+            objData.forEach(objItem => { data.info.push(objItem.calificacion); data.labels.push('') })
             break;
         case 'pie':
             data = getCal()
@@ -125,18 +127,18 @@ router.get('/graph/mejor/peor/promedio', (req, res) => {
     let suma = 0
 
     objData.forEach((obj) => {
-        suma += obj.Calificacion
-        if (mejor.cal < obj.Calificacion) {
-            mejor.cal = obj.Calificacion
-            mejor.nombre = obj.Nombres
+        suma += obj.calificacion
+        if (mejor.cal < obj.calificacion) {
+            mejor.cal = obj.calificacion
+            mejor.nombre = obj.nombres + " " + obj.apellidoPaterno + " " + obj.apellidoMaterno
         }
     })
 
     let peor = { cal: mejor.cal, nombre: '' };
     objData.forEach((obj) => {
-        if (peor.cal > obj.Calificacion) {
-            peor.cal = obj.Calificacion
-            peor.nombre = obj.Nombres
+        if (peor.cal > obj.calificacion) {
+            peor.cal = obj.calificacion
+            peor.nombre = obj.nombres + " " + obj.apellidoPaterno + " " + obj.apellidoMaterno
         }
     })
 
@@ -147,28 +149,37 @@ router.get('/graph/mejor/peor/promedio', (req, res) => {
 
 //Carga del archivo a server y memoria
 router.post('/data/upload', upload.single('fileXlsx'), (req, res) => {
-    if (req.file) {
-        objData = [];
+    try {
+        if (req.file) {
+            objData = [];
 
-        dataWorkSheet = xlsx.parse(req.file.path)[0].data.filter(Boolean);
-        headersTable = dataWorkSheet[0].filter(Boolean)
-        dataWorkSheet.splice(0, 1)
-        dataWorkSheet.forEach(element => {
-            let obj = {}
-            let na = false;
-            headersTable.forEach((item, index) => {
-                if (item == 'Calificacion' && !element[index]) na = true;
-                obj[item] = element[index]
+            dataWorkSheet = xlsx.parse(req.file.path)[0].data.filter(Boolean);
+            headersTable = dataWorkSheet[0].filter(Boolean).map(item => item = camel(item))
+
+            //validamos la cabecera del archivo
+            if (arrHeaders.find(item => headersTable.indexOf(item) == -1)) throw { error: 'Falta alguna cabecera' }
+
+            dataWorkSheet.splice(0, 1)
+            dataWorkSheet.forEach(element => {
+                let obj = {}
+                let na = false;
+                headersTable.forEach((item, index) => {
+                    if (item == 'calificacion' && !element[index]) na = true;
+                    obj[item] = element[index]
+                });
+                if (!na) {
+                    objData.push(obj)
+                }
             });
-            if (!na) {
-                objData.push(obj)
-            }
-        });
+            // console.log(objData)
+            fs.remove(req.file.path)
+            res.status(200).send({ success: 'Archivo cargado correctamente' })
+        } else {
+            throw { error: 'No se encontro archivo' }
+        }
 
-        fs.remove(req.file.path)
-        res.status(200).send({ success: true })
-    } else {
-        res.status(200).send({ error: true })
+    } catch (error) {
+        res.status(200).send(error)
     }
 })
 

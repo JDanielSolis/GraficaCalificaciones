@@ -21,7 +21,8 @@
   },
   "homepage": "https://github.com/JDanielSolis/GraficaCalificaciones#readme",
   "dependencies": {
-    "body-parser": "^1.18.3",
+    "body-parser": "^1.18.3",    
+    "camelcase": "^5.0.0",
     "chart.js": "^2.7.3",
     "express": "^4.16.4",
     "express-hbs": "^1.0.4",
