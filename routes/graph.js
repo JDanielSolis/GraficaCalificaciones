@@ -14,7 +14,7 @@ var objData = [];
 let getColors = () => {
     let colors = { border: [], background: [] };
 
-    for (x = 0; x <= dataWorkSheet.length; x++) {
+    for (x = 0; x <= objData.length; x++) {
         let color = `${Math.floor((Math.random() * 255) + 1)}, ${Math.floor((Math.random() * 255) + 1)}, ${Math.floor((Math.random() * 255) + 1)}`
         colors.border.push(`rgba(${color}, 1)`)
         colors.background.push(`rgba(${color}, 0.2)`)
@@ -111,6 +111,7 @@ let chartData = (typeGraph) => {
 
 router.get('/', (req, res) => {
     dataWorkSheet = [];
+    objData = []
     headersTable = [];
     res.render('graph');
 });
@@ -157,15 +158,20 @@ router.post('/data/upload', upload.single('fileXlsx'), (req, res) => {
             headersTable = dataWorkSheet[0].filter(Boolean).map(item => item = camel(item))
 
             //validamos la cabecera del archivo
-            if (arrHeaders.find(item => headersTable.indexOf(item) == -1)) throw { error: 'Falta alguna cabecera' }
+            if (arrHeaders.find(item => headersTable.indexOf(item) == -1)) {
+                fs.remove(req.file.path)
+                throw { error: 'Falta alguna cabecera' }
+            }
 
             dataWorkSheet.splice(0, 1)
             dataWorkSheet.forEach(element => {
                 let obj = {}
                 let na = false;
                 headersTable.forEach((item, index) => {
-                    if (item == 'calificacion' && !element[index]) na = true;
-                    obj[item] = element[index]
+                    if (arrHeaders.indexOf(item) >= 0) {
+                        if (item == 'calificacion' && (!element[index] || (typeof element[index] != 'number'))) na = true;
+                        obj[item] = element[index]
+                    }
                 });
                 if (!na) {
                     objData.push(obj)

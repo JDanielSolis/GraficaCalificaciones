@@ -23,12 +23,15 @@
       <div class="row">
         <div class="col-md-8 text-center">
           <div class="col-md-4">
+            <strong>El Mejor: </strong>
             <div id="mejorAlumno"></div>
           </div>
           <div class="col-md-4">
+            <strong>El Peor: </strong>
             <div id="peorAlumno"></div>
           </div>
           <div class="col-md-4">
+            <strong>Promedio General: </strong>
             <div id="promedioGral"></div>
           </div>
         </div>
@@ -66,24 +69,6 @@
             </div>
             <div class="col-md-1"></div>
           </div>
-          <div class="row">
-            <div class="col-md-11">
-              <label>Tipo de grafica</label>
-              <br>
-              <button onclick="getGraph(this.id)" id="bar" type="button" class="btn btn-primary btn-lg btn-block">Calificaciones
-                <i class="fa fa-bar-chart"></i></button>
-            </div>
-            <div class="col-md-1"></div>
-          </div>
-          <br>
-          <div class="row">
-            <div class="col-md-11">
-              <button onclick="getGraph(this.id)" id="pie" type="button" class="btn btn-info btn-lg btn-block">Datos
-                generales
-                <i class="fa fa-circle-o"></i></button>
-            </div>
-            <div class="col-md-1"></div>
-          </div>
         </div>
       </div>
       <br>
@@ -100,6 +85,9 @@
   };
 
   $(document).ready(function () {
+    getGraph('bar')
+    getGraph('pie')
+    
     $('#uploadForm').submit(function () {
       $("#status").empty().text("Cargando archivo...");
 
@@ -109,12 +97,12 @@
         },
         success: function (response) {
           if (response.error) return $("#status").html("<p class='alert alert-danger'><i class='glyphicon glyphicon-remove'></i> " + response.error + "</p>");
-          
+
           //El mejor, el peor y el promedio general
           $.get("http://localhost:8000/graph/mejor/peor/promedio", function (objData) {
-            $("#mejorAlumno").html('<strong>El Mejor: </strong>' + objData.mejor);
-            $("#peorAlumno").html('<strong>El peor: </strong>' + objData.peor);
-            $("#promedioGral").html('<strong>Promedio General: </strong>' + objData.promedio);
+            $("#mejorAlumno").html(objData.mejor);
+            $("#peorAlumno").html(objData.peor);
+            $("#promedioGral").html(objData.promedio);
           })
           getGraph('bar')
           getGraph('pie')
