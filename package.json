@@ -4,7 +4,10 @@
   "description": "grafica de calificaciones de alumnos",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-dev": "pkg server.js -o ./app/graficas-dev",
+    "build-prod": "pkg server.js -o ./app/graficas-prod",
+    "build-test": "pkg server.js -o ./app/graficas-test",
+    "start": "nodemon server.js"
   },
   "repository": {
     "type": "git",
@@ -23,13 +26,14 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "camelcase": "^5.0.0",
-    "chart.js": "^2.7.3",
     "express": "^4.16.4",
     "express-hbs": "^1.0.4",
+    "express-useragent": "^1.0.12",
     "fs-extra": "^7.0.1",
     "multer": "^1.4.1",
     "node-xlsx": "^0.12.1",
     "open": "0.0.5",
+    "path": "^0.12.7",
     "serve-favicon": "^2.5.0"
   }
 }

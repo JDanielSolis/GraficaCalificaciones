@@ -1,5 +1,6 @@
 {
-    "local": {        
+    "local": {      
+        "host":"localhost",  
         "port": 8000
     }
 }

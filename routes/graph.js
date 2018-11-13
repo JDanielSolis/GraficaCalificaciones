@@ -110,10 +110,14 @@ let chartData = (typeGraph) => {
 }
 
 router.get('/', (req, res) => {
+    let browser = (req.useragent.browser).toLocaleLowerCase()
+    
     dataWorkSheet = [];
     objData = []
     headersTable = [];
-    res.render('graph');
+
+    let render = (['firefox', 'chrome'].indexOf(browser) >= 0) ? 'graph' : 'alert';
+    res.render(render);
 });
 
 router.get('/graph/:type', (req, res) => {
