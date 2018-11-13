@@ -2,7 +2,7 @@
 
 Este es un ejemplo para leer una plantilla de excel con calificaciones y visualizar en graficas de barras y circular.
 
-![screen](https://user-images.githubusercontent.com/44902537/48317559-864d8700-e5b1-11e8-81df-d8e24cc0f379.png)
+![graph](https://user-images.githubusercontent.com/44902537/48446351-3f4cc680-e756-11e8-9065-74c7b9a98405.png)
 
 ![alert](https://user-images.githubusercontent.com/44902537/48428513-6a202600-e728-11e8-8bb5-3115027f1916.png)
 

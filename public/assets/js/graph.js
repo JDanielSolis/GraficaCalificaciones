@@ -1,17 +1,21 @@
 let host = "http://localhost";
 let port = 8000;
+let chart = {};
 
 let getGraph = function (type) {
     $.get(host + ":" + port + "/graph/" + type, function (objData) {
         let element = document.getElementById(type);
-        new Chart(element, objData);
+        if (chart[type]) chart[type].destroy()
+        chart[type] = new Chart(element, objData);
     })
 };
 
-$(document).ready(function () {    
+$(document).ready(function () {
     getGraph('bar')
     getGraph('pie')
-
+    $('#uploadForm').change(function () {
+        $('#uploadForm').submit()
+    })
     $('#uploadForm').submit(function () {
         $("#status").empty().text("Cargando archivo...");
 
